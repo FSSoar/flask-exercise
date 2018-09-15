@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, abort
 import mockdb.mockdb_interface as db
 
 app = Flask(__name__)
@@ -60,9 +60,19 @@ def mirror(name):
 
 @app.route("/users")
 def returnUsers():
+	print("usersCalled")
 	info = {"users": db.get('users')}
 	return create_response(info)
 
+@app.route("/users/<id>")
+def returnUserByID(id):
+	results = {"person": db.getById('users',int(id)) }
+	
+	if results['person'] is None:
+		return abort(404, "ID not found")
+		
+	
+	return create_response(results);
 
 
 
