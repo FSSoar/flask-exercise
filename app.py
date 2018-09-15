@@ -58,28 +58,58 @@ def mirror(name):
 # TODO: Implement the rest of the API here!
 
 
-@app.route("/users")
+@app.route("/users", methods=['GET', 'POST'])
 def returnUsers():
-	print("usersCalled")	
-	team = request.args.get('team')
-	print(team)
-	list = []
-	if (team is not None):
-		print("readyToQuery")
-		for i in db.get('users'):
-			if i['team'] == team: 
-				print("teamFound")
-				list.append(i)
-				
-				
-		info = {"users": list}
-		return create_response(info)
-		
+	print("usersCalled")
 	
-	else:
-		print("Do not query")
-		info = {"users": db.get('users')}
-		return create_response(info)
+	
+	
+	if request.method == 'POST':
+		print("POST")
+		data = request.get_json()
+
+		expectedValues = ['name', 'age', 'team']
+		keys = data.keys()
+		print(keys)
+		
+		areMissingKeys = False
+		stringOfMissingKeys = ""
+		missingKeys = 0
+		for value in expectedValues:
+			if value in keys:
+				print('key found')
+			else:
+				print(value)
+				areMissingKeys = True
+				missingKeys += 1
+				stringOfMissingKeys += "{}) ".format(missingKeys) + value + " "
+				
+		if areMissingKeys:
+			abort(422, "You are missing the following keys " + stringOfMissingKeys)	
+		
+		status = {"status": 201 }
+		return create_response(status)
+		
+	else:	
+		team = request.args.get('team')
+		print(team)
+		list = []
+		if (team is not None):
+			print("readyToQuery")
+			for i in db.get('users'):
+				if i['team'] == team: 
+					print("teamFound")
+					list.append(i)
+
+
+			info = {"users": list}
+			return create_response(info)
+
+
+		else:
+			print("Do not query")
+			info = {"users": db.get('users')}
+			return create_response(info)
 		
 
 
