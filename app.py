@@ -60,9 +60,28 @@ def mirror(name):
 
 @app.route("/users")
 def returnUsers():
-	print("usersCalled")
-	info = {"users": db.get('users')}
-	return create_response(info)
+	print("usersCalled")	
+	team = request.args.get('team')
+	print(team)
+	list = []
+	if (team is not None):
+		print("readyToQuery")
+		for i in db.get('users'):
+			if i['team'] == team: 
+				print("teamFound")
+				list.append(i)
+				
+				
+		info = {"users": list}
+		return create_response(info)
+		
+	
+	else:
+		print("Do not query")
+		info = {"users": db.get('users')}
+		return create_response(info)
+		
+
 
 @app.route("/users/<id>")
 def returnUserByID(id):
@@ -73,8 +92,6 @@ def returnUserByID(id):
 		
 	
 	return create_response(results);
-
-
 
 
 
