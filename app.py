@@ -86,9 +86,10 @@ def returnUsers():
 				
 		if areMissingKeys:
 			abort(422, "You are missing the following keys " + stringOfMissingKeys)	
-		
-		status = {"status": 201 }
-		return create_response(status)
+		else:
+			db.create('users', data)		
+			status = {"status": 201 }
+			return create_response(status)
 		
 	else:	
 		team = request.args.get('team')
