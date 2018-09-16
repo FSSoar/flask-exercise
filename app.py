@@ -67,29 +67,14 @@ def returnUsers():
 	if request.method == 'POST':
 		print("POST")
 		data = request.get_json()
-
-		expectedValues = ['name', 'age', 'team']
 		keys = data.keys()
 		print(keys)
 		
-		areMissingKeys = False
-		stringOfMissingKeys = ""
-		missingKeys = 0
-		for value in expectedValues:
-			if value in keys:
-				print('key found')
-			else:
-				print(value)
-				areMissingKeys = True
-				missingKeys += 1
-				stringOfMissingKeys += "{}) ".format(missingKeys) + value + " "
-				
-		if areMissingKeys:
-			abort(422, "You are missing the following keys " + stringOfMissingKeys)	
-		else:
-			db.create('users', data)		
-			status = {"status": 201 }
-			return create_response(status)
+		checkKeys(keys, ['name', 'age', 'team']) #throws an error if any criteria is missing 
+		
+		db.create('users', data)		
+		status = {"status": 201 }
+		return create_response(status)
 		
 	else:	
 		team = request.args.get('team')
@@ -114,17 +99,50 @@ def returnUsers():
 		
 
 
-@app.route("/users/<id>")
+@app.route("/users/<id>", methods=["GET", "PUT"])
 def returnUserByID(id):
-	results = {"person": db.getById('users',int(id)) }
 	
+	results = {"person": db.getById('users',int(id)) }
+
 	if results['person'] is None:
 		return abort(404, "ID not found")
 		
+		
+		
+	if request.method == 'PUT':
+		print()
+		data = request.get_json()
+		keys = data.keys()
+		print(data)
+		print(db.updateById('users',int(id), data))
+		return create_response({"status" : 201 })		
+						
+		
+	else:
+		
+
+		return create_response(results);
+
+
+
+def checkKeys(keys, expectedValues):
 	
-	return create_response(results);
-
-
+		
+		
+	areMissingKeys = False
+	stringOfMissingKeys = ""
+	missingKeys = 0
+	for value in expectedValues:
+		if value in keys:
+			print('key found')
+		else:
+			print(value)
+			areMissingKeys = True
+			missingKeys += 1
+			stringOfMissingKeys += "{}) ".format(missingKeys) + value + " "
+			
+	if areMissingKeys:
+		abort(422, "You are missing the following keys " + stringOfMissingKeys)	
 
 """
 ~~~~~~~~~~~~ END API ~~~~~~~~~~~~
