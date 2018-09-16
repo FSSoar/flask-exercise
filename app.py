@@ -56,8 +56,7 @@ def mirror(name):
 
 
 # TODO: Implement the rest of the API here!
-
-    """ GET and POST
+""" GET and POST
     This function has the ability to insert new user data into the database as well as query for the data. 
 	Querying can be done by getting all users or filtering by team. 
 	
@@ -107,8 +106,7 @@ def returnUsers():
 		
 		
 		
-		
-    """ GET, PUT and DELETE
+""" GET, PUT and DELETE
 	Allows for access to one user in the database at a time based on id. 
 	For all cases a 404 is thrown if ID is not found
 	GET: returns one user based on the ID. 
