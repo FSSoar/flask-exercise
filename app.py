@@ -119,9 +119,9 @@ def returnUsers():
 @app.route("/users/<id>", methods=["GET", "PUT", "DELETE"])
 def returnUserByID(id):
 	
-	results = {"person": db.getById('users',int(id)) }
+	results = {"user": db.getById('users',int(id)) }
 
-	if results['person'] is None:
+	if results['user'] is None:
 		return abort(404, "ID not found")
 		
 		
