@@ -57,7 +57,12 @@ def mirror(name):
 
 # TODO: Implement the rest of the API here!
 
-
+    """ GET and POST
+    This function has the ability to insert new user data into the database as well as query for the data. 
+	Querying can be done by getting all users or filtering by team. 
+	
+    :returns one or multiple users 
+    """
 @app.route("/users", methods=['GET', 'POST'])
 def returnUsers():
 	print("usersCalled")
@@ -99,6 +104,20 @@ def returnUsers():
 		
 
 
+		
+		
+		
+		
+    """ GET, PUT and DELETE
+	Allows for access to one user in the database at a time based on id. 
+	For all cases a 404 is thrown if ID is not found
+	GET: returns one user based on the ID. 
+	PUT: updates one user based on ID and returns if successful
+	DELETE: deletes teh user from the database and returns a message if the data is successfully delted.
+	
+    :param id <int> 
+    :returns a single user tuple 
+    """
 @app.route("/users/<id>", methods=["GET", "PUT", "DELETE"])
 def returnUserByID(id):
 	
@@ -122,6 +141,14 @@ def returnUserByID(id):
 
 
 
+	""" 
+	This is a function that checks to see if all keys necessary are input by the user. 
+	If all the expected keys are in the keys provided True is returned.
+	If one or more keys is missing a 422 error is thrown and all the keys missing are returned as the error message.
+    :param keys <string[]> 
+	:param expectedValues <string[]> 
+    :returns boolean
+    """
 def checkKeys(keys, expectedValues):
 	
 		
@@ -139,7 +166,9 @@ def checkKeys(keys, expectedValues):
 			stringOfMissingKeys += "{}) ".format(missingKeys) + value + " "
 			
 	if areMissingKeys:
-		abort(422, "You are missing the following keys " + stringOfMissingKeys)	
+		abort(422, "You are missing the following keys " + stringOfMissingKeys)
+		
+	return True
 
 """
 ~~~~~~~~~~~~ END API ~~~~~~~~~~~~
