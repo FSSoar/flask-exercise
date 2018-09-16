@@ -52,9 +52,6 @@ def mirror(name):
     return create_response(data)
 
 
-
-
-
 # TODO: Implement the rest of the API here!
 """ GET and POST
     This function has the ability to insert new user data into the database as well as query for the data. 
@@ -62,50 +59,47 @@ def mirror(name):
 	
     :returns one or multiple users 
     """
-@app.route("/users", methods=['GET', 'POST'])
+
+
+@app.route("/users", methods=["GET", "POST"])
 def returnUsers():
-	print("usersCalled")
-	
-	
-	
-	if request.method == 'POST':
-		print("POST")
-		data = request.get_json()
-		keys = data.keys()
-		print(keys)
-		
-		checkKeys(keys, ['name', 'age', 'team']) #throws an error if any criteria is missing 
-		
-		db.create('users', data)		
-		status = {"status": 201 }
-		return create_response(status)
-		
-	else:	
-		team = request.args.get('team')
-		print(team)
-		list = []
-		if (team is not None):
-			print("readyToQuery")
-			for i in db.get('users'):
-				if i['team'] == team: 
-					print("teamFound")
-					list.append(i)
+    print("usersCalled")
+
+    if request.method == "POST":
+        print("POST")
+        data = request.get_json()
+        keys = data.keys()
+        print(keys)
+
+        checkKeys(
+            keys, ["name", "age", "team"]
+        )  # throws an error if any criteria is missing
+
+        userCreated = db.create("users", data)
+        status = {"result": userCreated}
+        print(status)
+        return jsonify(userCreated), 201
+
+    else:
+        team = request.args.get("team")
+        print(team)
+        list = []
+        if team is not None:
+            print("readyToQuery")
+            for i in db.get("users"):
+                if i["team"] == team:
+                    print("teamFound")
+                    list.append(i)
+
+            info = {"users": list}
+            return create_response(info)
+
+        else:
+            print("Do not query")
+            info = {"users": db.get("users")}
+            return create_response(info)
 
 
-			info = {"users": list}
-			return create_response(info)
-
-
-		else:
-			print("Do not query")
-			info = {"users": db.get('users')}
-			return create_response(info)
-		
-
-
-		
-		
-		
 """ GET, PUT and DELETE
 	Allows for access to one user in the database at a time based on id. 
 	For all cases a 404 is thrown if ID is not found
@@ -116,30 +110,29 @@ def returnUsers():
     :param id <int> 
     :returns a single user tuple 
     """
+
+
 @app.route("/users/<id>", methods=["GET", "PUT", "DELETE"])
 def returnUserByID(id):
-	
-	results = {"user": db.getById('users',int(id)) }
 
-	if results['user'] is None:
-		return abort(404, "ID not found")
-		
-		
-	if request.method == 'PUT':
-		data = request.get_json()
-		keys = data.keys()
-		print(data)
-		db.updateById('users',int(id), data)
-		return create_response({"status" : 201 })		
-	elif request.method == 'DELETE': 
-		db.deleteById('users',int(id))
-		return create_response({"message" : "Deletion of Data Successful" })	
-	else:
-		return create_response(results);
+    results = {"user": db.getById("users", int(id))}
 
+    if results["user"] is None:
+        return abort(404, "ID not found")
 
+    if request.method == "PUT":
+        data = request.get_json()
+        keys = data.keys()
+        print(data)
+        userUpdate = db.updateById("users", int(id), data)
+        return jsonify(userUpdate), 201
+    elif request.method == "DELETE":
+        db.deleteById("users", int(id))
+        return jsonify({"message": "Deletion of Data Successful"})
+    else:
+        return create_response(results)
 
-	""" 
+    """ 
 	This is a function that checks to see if all keys necessary are input by the user. 
 	If all the expected keys are in the keys provided True is returned.
 	If one or more keys is missing a 422 error is thrown and all the keys missing are returned as the error message.
@@ -147,26 +140,27 @@ def returnUserByID(id):
 	:param expectedValues <string[]> 
     :returns boolean
     """
+
+
 def checkKeys(keys, expectedValues):
-	
-		
-		
-	areMissingKeys = False
-	stringOfMissingKeys = ""
-	missingKeys = 0
-	for value in expectedValues:
-		if value in keys:
-			print('key found')
-		else:
-			print(value)
-			areMissingKeys = True
-			missingKeys += 1
-			stringOfMissingKeys += "{}) ".format(missingKeys) + value + " "
-			
-	if areMissingKeys:
-		abort(422, "You are missing the following keys " + stringOfMissingKeys)
-		
-	return True
+
+    areMissingKeys = False
+    stringOfMissingKeys = ""
+    missingKeys = 0
+    for value in expectedValues:
+        if value in keys:
+            print("key found")
+        else:
+            print(value)
+            areMissingKeys = True
+            missingKeys += 1
+            stringOfMissingKeys += "{}) ".format(missingKeys) + value + " "
+
+    if areMissingKeys:
+        abort(422, "You are missing the following keys " + stringOfMissingKeys)
+
+    return True
+
 
 """
 ~~~~~~~~~~~~ END API ~~~~~~~~~~~~
