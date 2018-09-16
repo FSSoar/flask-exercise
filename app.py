@@ -99,7 +99,7 @@ def returnUsers():
 		
 
 
-@app.route("/users/<id>", methods=["GET", "PUT"])
+@app.route("/users/<id>", methods=["GET", "PUT", "DELETE"])
 def returnUserByID(id):
 	
 	results = {"person": db.getById('users',int(id)) }
@@ -108,19 +108,16 @@ def returnUserByID(id):
 		return abort(404, "ID not found")
 		
 		
-		
 	if request.method == 'PUT':
-		print()
 		data = request.get_json()
 		keys = data.keys()
 		print(data)
-		print(db.updateById('users',int(id), data))
+		db.updateById('users',int(id), data)
 		return create_response({"status" : 201 })		
-						
-		
+	elif request.method == 'DELETE': 
+		db.deleteById('users',int(id))
+		return create_response({"message" : "Deletion of Data Successful" })	
 	else:
-		
-
 		return create_response(results);
 
 
